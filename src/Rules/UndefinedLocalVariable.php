@@ -93,7 +93,7 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
     private function removeDeclaredVariables(AbstractNode $node)
     {
         foreach ($this->nodes as $variable) {
-			if ($this->isChildOf($variable, 'AssignmentExpression')) {
+			if ($this->isChildOf($variable, 'AssignmentExpression') || $this->isChildOf($variable, 'ForeachStatement')) {
 				unset($this->nodes[$variable->getImage()]);
 			}
 

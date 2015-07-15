@@ -75,6 +75,11 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
         return false;
     }
 
+	/**
+	 * Gets closures within the method or function.
+	 *
+	 * @param AbstractNode $node
+	 */
 	private function getClosures(AbstractNode $node)
 	{
 		$closures = $node->findChildrenOfType('Closure');

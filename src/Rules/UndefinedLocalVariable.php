@@ -8,9 +8,9 @@ use PHPMD\Rule\MethodAware;
 use PHPMD\Rule\AbstractLocalVariable;
 
 /**
- * Description of UndefinedLocalVariable
+ * This rule checks whether or not a local variable was ever defined inside the function.
  *
- * @author nic
+ * @author Nic Puddu <nicola.puddu@veinteractive.com>
  */
 class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAware, MethodAware
 {
@@ -20,7 +20,21 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
      *
      * @var \PHPMD\Node\ASTNode[]
      */
-    private $nodes = array();
+    private $nodes = [];
+
+	/**
+     * Collected closures.
+     *
+     * @var \PHPMD\Node\ASTNode[]
+     */
+	private $closures = [];
+
+	/**
+     * Current Closure analysed.
+     *
+     * @var \PHPMD\Node\ASTNode[]
+     */
+	private $currentClosure;
 
 	public function apply(AbstractNode $node)
     {
@@ -29,14 +43,19 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
         }
         
         $this->nodes = [];
+		$this->currentClosure = null;
+		
+		$this->getClosures($node);
         $this->collectVariables($node);
 		$this->removeParameters($node);
         $this->removeDeclaredVariables($node);
         foreach ($this->nodes as $node) {
             $this->addViolation($node, array($node->getImage()));
         }
-    }
 
+		$this->processClosuresVariables();
+    }
+	
 	/**
      * Returns <b>true</b> when the given node is an abstract method.
      *
@@ -50,6 +69,15 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
         }
         return false;
     }
+
+	private function getClosures(AbstractNode $node)
+	{
+		$closures = $node->findChildrenOfType('Closure');
+
+		foreach ($closures as $closure) {
+			$this->closures[] = $closure;
+		}
+	}
    
     /**
      * This method extracts all local variables for the given function or method node.
@@ -60,12 +88,30 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
     {
 		$variables = $node->findChildrenOfType('Variable');
         foreach ($variables as $variable) {
-			if ($this->isLocal($variable) && !isset($this->nodes[$variable->getImage()])) {
+			if ($this->isLocal($variable) && $this->isNotInClosure($variable) && !isset($this->nodes[$variable->getImage()])) {
 				$this->nodes[$variable->getImage()] = $variable;
 			}
 			
         }
     }
+
+	/**
+	 * Checks whether or not the current variable is inside a closure.
+	 *
+	 * @param AbstractNode $node
+	 * @return boolean
+	 */
+	private function isNotInClosure(AbstractNode $node)
+	{
+		$variableLine = $node->getBeginLine();
+		foreach ($this->closures as $closure) {
+			if ($closure !== $this->currentClosure && $variableLine > $closure->getBeginLine() && $variableLine < $closure->getEndLine()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	/**
      * This method removes from the stored list of local variables the ones that
@@ -121,5 +167,22 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
             return true;
         }
         return false;
+	}
+
+	/**
+	 * Process every
+	 */
+	private function processClosuresVariables()
+	{
+		foreach ($this->closures as $node) {
+			$this->currentClosure = $node;
+			$this->nodes = [];
+			$this->collectVariables($node);
+			$this->removeParameters($node);
+			$this->removeDeclaredVariables($node);
+			foreach ($this->nodes as $node) {
+				$this->addViolation($node, array($node->getImage()));
+			}
+		}
 	}
 }

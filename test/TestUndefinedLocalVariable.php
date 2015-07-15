@@ -7,9 +7,6 @@ class TestUndefinedLocalVariable
 	public function unused($test)
 	{
 		return function($functionVar1, $functionVar2) use ($test) {
-			$functionVar1;
-			isset($functionVar2, $test);
-
 			isset($functionVar3);
 		};
 

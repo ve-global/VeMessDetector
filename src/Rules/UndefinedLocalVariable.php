@@ -36,6 +36,9 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
      */
 	private $currentClosure;
 
+	/**
+	 * @param AbstractNode $node
+	 */
 	public function apply(AbstractNode $node)
     {
         if ($this->isAbstractMethod($node)) {
@@ -48,12 +51,13 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 		$this->getClosures($node);
         $this->collectVariables($node);
 		$this->removeParameters($node);
-        $this->removeDeclaredVariables($node);
+        $this->removeDeclaredVariables();
         foreach ($this->nodes as $node) {
             $this->addViolation($node, array($node->getImage()));
         }
 
-		$this->processClosuresVariables();
+		// method disabled because there is no way to get the use statement.
+		//$this->processClosuresVariables();
     }
 	
 	/**
@@ -133,10 +137,8 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 
 	/**
      * This method removes from the stored list of local variables the ones that have been declared.
-     *
-     * @param AbstractNode $node
      */
-    private function removeDeclaredVariables(AbstractNode $node)
+    private function removeDeclaredVariables()
     {
         foreach ($this->nodes as $variable) {
 			if (
@@ -170,7 +172,9 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 	}
 
 	/**
-	 * Process every
+	 * Process every closure and look for unused variables inside them.
+	 * This method is currently unused because there is no way to get variables
+	 * passed to the closure with the use keyword.
 	 */
 	private function processClosuresVariables()
 	{
@@ -179,7 +183,8 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 			$this->nodes = [];
 			$this->collectVariables($node);
 			$this->removeParameters($node);
-			$this->removeDeclaredVariables($node);
+			$this->removeDeclaredVariables();
+			$this->removeVariablesPreviouslyDeclared();
 			foreach ($this->nodes as $node) {
 				$this->addViolation($node, array($node->getImage()));
 			}

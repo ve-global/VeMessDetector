@@ -136,7 +136,7 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
 			$this->isChildOf($node, 'ScopeStatement') &&
 			$this->isChildOf($node->getParent(), 'TryStatement') &&
 			$this->isFinalStatement($node->getParent(), $node) &&
-			$this->thereIsNotFinallyStatement($node) &&
+			$this->thereIsNoFinallyStatement($node) &&
 			$this->thereIsNoCodeBeyondTryCatch($node->getParent()->getParent())
 			) {
 			return true;
@@ -184,7 +184,7 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
 	 * @param AbstractNode $node
 	 * @return type
 	 */
-	private function thereIsNotFinallyStatement(AbstractNode $node)
+	private function thereIsNoFinallyStatement(AbstractNode $node)
 	{
 		return $node->getParent()->getParent()->getFirstChildOfType('FinallyStatement') ? false : true;
 	}

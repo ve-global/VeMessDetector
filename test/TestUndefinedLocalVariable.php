@@ -36,6 +36,13 @@ class TestUndefinedLocalVariable
 		}
 
 		isset($variable['test'], $variable['what']);
+	}
+
+	public function unused2()
+	{
+		list($page, $limit, $offset) = $this->getPaginationProperties();
+
+		isset($page, $limit, $offset);
 
 		try
 		{

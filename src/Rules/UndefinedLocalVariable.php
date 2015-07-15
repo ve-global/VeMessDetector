@@ -46,6 +46,7 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
         }
         
         $this->nodes = [];
+		$this->closures = [];
 		$this->currentClosure = null;
 		
 		$this->getClosures($node);
@@ -145,6 +146,7 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 				$this->isChildOf($variable, 'AssignmentExpression') ||
 				$this->isChildOf($variable, 'ForeachStatement') ||
 				$this->isChildOf($variable, 'CatchStatement') ||
+				$this->isChildOf($variable, 'ListExpression') ||
 				(
 					$this->isChildOf($variable, 'UnaryExpression') &&
 					$this->isChildOf($variable->getParent(), 'ForeachStatement')

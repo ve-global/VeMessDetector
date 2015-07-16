@@ -92,4 +92,4 @@ Some technical limitations do not allow proper checks of closures, therefore eve
 
 ## Unreachable Code
 
-This rule will check whether or not a return statement is going to systematically stop the execution of the rest of the method.
+This rule will check whether or not a ```return``` or ```throw``` statement is going to systematically stop the execution of the rest of the method.

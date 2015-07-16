@@ -77,7 +77,7 @@ The following rules are applied by default:
 - Boolean Get Method Name
 - Unused Code
 
-All this rules can be looked up on the [official documentation page](http://phpmd.org/rules/index.html).
+All these rules can be looked up on the [official documentation page](http://phpmd.org/rules/index.html).
 
 The following additional rules have been created:
 

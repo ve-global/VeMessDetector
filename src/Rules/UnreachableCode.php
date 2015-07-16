@@ -32,7 +32,8 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
         
         $this->nodes = [];
 		
-        $this->collectReturnStatements($node);
+        $this->collectStatements($node, 'ReturnStatement');
+		$this->collectStatements($node, 'ThrowStatement');
         foreach ($this->nodes as $node) {
             $this->addViolation($node, array($node->getImage()));
         }
@@ -53,24 +54,25 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
     }
    
     /**
-     * This method extracts all local variables for the given function or method node.
+     * This method extracts all statements of a given type for the given function or method node.
      *
      * @param AbstractNode $node
+	 * @param string       $statementType
      */
-    private function collectReturnStatements(AbstractNode $node)
+    private function collectStatements(AbstractNode $node, $statementType)
     {
-		$returns = $node->findChildrenOfType('ReturnStatement');
-        foreach ($returns as $return) {
+		$statements = $node->findChildrenOfType($statementType);
+        foreach ($statements as $statement) {
 			if (
-				!$this->isFinalReturn($return, $node) &&
-				!$this->isAtEndOfIfStatement($return) &&
-				!$this->isAtEndOfSwitchStatement($return) &&
-				!$this->isAtEndOfTry($return) &&
-				!$this->isAtEndOfCatch($return) &&
-				!$this->isAtEndOfFinally($return) &&
-				!$this->isAtEndOfClosure($return)
+				!$this->isAtEndOfMainScope($statement, $node) &&
+				!$this->isAtEndOfIfStatement($statement) &&
+				!$this->isAtEndOfSwitchStatement($statement) &&
+				!$this->isAtEndOfTry($statement) &&
+				!$this->isAtEndOfCatch($statement) &&
+				!$this->isAtEndOfFinally($statement) &&
+				!$this->isAtEndOfClosure($statement)
 				) {
-				$this->nodes[] = $return;
+				$this->nodes[] = $statement;
 			}
 		}
     }
@@ -79,7 +81,7 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
 	 * @param AbstractNode $node
 	 * @return boolean
 	 */
-	private function isFinalReturn(AbstractNode $node, AbstractNode $method)
+	private function isAtEndOfMainScope(AbstractNode $node, AbstractNode $method)
 	{
 		if ($this->isChildOf($node, 'Scope') && $this->isFinalStatement($method, $node)) {
 			return true;
@@ -118,7 +120,7 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
 		if (
 			$this->isChildOf($node, 'SwitchLabel') &&
 			$this->isChildOf($node->getParent(), 'SwitchStatement') &&
-			$this->isFinalStatement($node->getParent(), $node)
+			$this->isFinalStatement($node->getParent(), $node, 0)
 			) {
 			return true;
 		}
@@ -236,11 +238,12 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
 	/**
 	 * @param AbstractNode $scope
 	 * @param AbstractNode $node
+	 * @param integer      $adjustment number of lines to add to the final line of the node being checked.
 	 * @return boolean
 	 */
-	private function isFinalStatement(AbstractNode $scope, AbstractNode $node)
+	private function isFinalStatement(AbstractNode $scope, AbstractNode $node, $adjustment = 1)
 	{
-		if ($node->getEndLine() + 1 === $scope->getEndLine() || $node->getEndLine() === $scope->getEndLine()) {
+		if ($node->getEndLine() + $adjustment === $scope->getEndLine()) {
 			return true;
 		}
 

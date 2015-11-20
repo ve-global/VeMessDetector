@@ -29,16 +29,16 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
         if ($this->isAbstractMethod($node)) {
             return;
         }
-        
+
         $this->nodes = [];
-		
+
         $this->collectStatements($node, 'ReturnStatement');
 		$this->collectStatements($node, 'ThrowStatement');
         foreach ($this->nodes as $node) {
             $this->addViolation($node, array($node->getImage()));
         }
     }
-	
+
 	/**
      * Returns <b>true</b> when the given node is an abstract method.
      *
@@ -52,7 +52,7 @@ class UnreachableCode extends \PHPMD\AbstractRule implements FunctionAware, Meth
         }
         return false;
     }
-   
+
     /**
      * This method extracts all statements of a given type for the given function or method node.
      *

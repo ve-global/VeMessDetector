@@ -44,11 +44,11 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
         if ($this->isAbstractMethod($node)) {
             return;
         }
-        
+
         $this->nodes = [];
 		$this->closures = [];
 		$this->currentClosure = null;
-		
+
 		$this->getClosures($node);
         $this->collectVariables($node);
 		$this->removeParameters($node);
@@ -60,7 +60,7 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 		// method disabled because there is no way to get the use statement.
 		//$this->processClosuresVariables();
     }
-	
+
 	/**
      * Returns <b>true</b> when the given node is an abstract method.
      *
@@ -88,7 +88,7 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 			$this->closures[] = $closure;
 		}
 	}
-   
+
     /**
      * This method extracts all local variables for the given function or method node.
      *
@@ -101,7 +101,7 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 			if ($this->isLocal($variable) && $this->isNotInClosure($variable) && !isset($this->nodes[$variable->getImage()])) {
 				$this->nodes[$variable->getImage()] = $variable;
 			}
-			
+
         }
     }
 

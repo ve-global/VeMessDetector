@@ -166,6 +166,11 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
      */
     private function removePregMatchVariables()
     {
+        if ($this->getBooleanProperty('ignorePregMatch') !== true)
+        {
+            return;
+        }
+
         foreach ($this->nodes as $variable) {
             $parent = $variable->getParent()->getParent();
             if ($parent->isInstanceOf('FunctionPostfix') && in_array($parent->getImage(), ['preg_match', 'preg_match_all'])) {

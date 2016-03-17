@@ -2,55 +2,68 @@
 
 class TestUndefinedLocalVariable
 {
-	public $whatever = [];
+    public $whatever = [];
 
-	public function unused($test)
-	{
-		return function($functionVar1, $functionVar2) use ($test) {
-			isset($functionVar3);
-		};
+    public function preg_match()
+    {
+        $pattern = '/[a-z]/';
+        preg_match($pattern, $subject, $matches);
+    }
 
-		isset($functionVar3);
+    public function preg_match_all()
+    {
+        $subject = 'string';
+        preg_match_all($pattern, $subject, $matches);
+    }
 
-		isset($test);
 
-		isset($functionVar1);
+    public function unused($test)
+    {
+        return function($functionVar1, $functionVar2) use ($test) {
+            isset($functionVar3);
+        };
 
-		isset($adsf, $adsf);
+        isset($functionVar3);
 
-		$adsf = 'what';
+        isset($test);
 
-		foreach ($this->whatever as &$var)
-		{
-			isset($var);
-		}
+        isset($functionVar1);
 
-		foreach ($this->whatever as $var2)
-		{
-			isset($var2);
-		}
+        isset($adsf, $adsf);
 
-		foreach ($var3 as $var4)
-		{
-			isset($var4);
-		}
+        $adsf = 'what';
 
-		isset($variable['test'], $variable['what']);
-	}
+        foreach ($this->whatever as &$var)
+        {
+            isset($var);
+        }
 
-	public function unused2()
-	{
-		list($page, $limit, $offset) = $this->getPaginationProperties();
+        foreach ($this->whatever as $var2)
+        {
+            isset($var2);
+        }
 
-		isset($page, $limit, $offset);
+        foreach ($var3 as $var4)
+        {
+            isset($var4);
+        }
 
-		try
-		{
+        isset($variable['test'], $variable['what']);
+    }
 
-		}
-		catch (Exception $exc)
-		{
-			echo $exc->getTraceAsString();
-		}
-	}
+    public function unused2()
+    {
+        list($page, $limit, $offset) = $this->getPaginationProperties();
+
+        isset($page, $limit, $offset);
+
+        try
+        {
+
+        }
+        catch (Exception $exc)
+        {
+            echo $exc->getTraceAsString();
+        }
+    }
 }

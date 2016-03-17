@@ -93,3 +93,11 @@ Some technical limitations do not allow proper checks of closures, therefore eve
 ## Unreachable Code
 
 This rule will check whether or not a ```return``` or ```throw``` statement is going to systematically stop the execution of the rest of the method.
+
+## Tests
+
+To run the tests on this repository and see how the rules behave use the following command:
+
+```
+vendor/bin/phpmd test text phpmd.xml
+```

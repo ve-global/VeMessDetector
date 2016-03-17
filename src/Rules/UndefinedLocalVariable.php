@@ -173,7 +173,7 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
 
         foreach ($this->nodes as $variable) {
             $parent = $variable->getParent()->getParent();
-            if ($parent->isInstanceOf('FunctionPostfix') && in_array($parent->getImage(), ['preg_match', 'preg_match_all'])) {
+            if ($parent->isInstanceOf('FunctionPostfix') && in_array($this->getFunctionShortName($parent->getImage()), ['preg_match', 'preg_match_all'])) {
                 $children = $parent->findChildrenOfType('Variable');
                 $numberOfChildren = count($children);
                 $lastParameter = array_pop($children);
@@ -183,6 +183,20 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
                 }
             }
         }
+    }
+
+    /**
+     * @param string $functionName
+     * @return string
+     */
+    private function getFunctionShortName($functionName)
+    {
+        $lastSlashPosition = strrpos($functionName, '\\');
+        if ($lastSlashPosition === false)
+        {
+            return $functionName;
+        }
+        return substr($functionName, $lastSlashPosition + 1);
     }
 
     /**

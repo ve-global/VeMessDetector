@@ -1,5 +1,7 @@
 <?php
 
+namespace Testing;
+
 class TestUndefinedLocalVariable
 {
     public $whatever = [];

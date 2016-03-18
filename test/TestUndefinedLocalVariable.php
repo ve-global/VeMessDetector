@@ -9,7 +9,7 @@ class TestUndefinedLocalVariable
     public function preg_match()
     {
         $pattern = '/[a-z]/';
-        preg_match($pattern, $subject, $matches);
+        preg_match($pattern, '/asdf/', $matches);
     }
 
     public function preg_match_all()

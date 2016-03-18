@@ -174,14 +174,26 @@ class UndefinedLocalVariable extends AbstractLocalVariable implements FunctionAw
         foreach ($this->nodes as $variable) {
             $parent = $variable->getParent()->getParent();
             if ($parent->isInstanceOf('FunctionPostfix') && in_array($this->getFunctionShortName($parent->getImage()), ['preg_match', 'preg_match_all'])) {
-                $children = $parent->findChildrenOfType('Variable');
-                $numberOfChildren = count($children);
-                $lastParameter = array_pop($children);
-                if ($numberOfChildren === 3 && $lastParameter == $variable)
-                {
-                    unset($this->nodes[$variable->getImage()]);
-                }
+                $this->discardPregMatchThirdArgument($parent, $variable);
             }
+        }
+    }
+
+    /**
+     * @param AbstractNode $function
+     * @param AbstractNode $variable
+     */
+    private function discardPregMatchThirdArgument(AbstractNode $function, AbstractNode $variable)
+    {
+        $arguments = $function->findChildrenOfType('Arguments')[0];
+        if (count($arguments->getChildren()) < 3)
+        {
+            return;
+        }
+        $parameter = $arguments->getChild(2);
+        if ($parameter == $variable)
+        {
+            unset($this->nodes[$variable->getImage()]);
         }
     }
 
